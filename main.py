@@ -3,15 +3,14 @@ from dotenv import load_dotenv
 from langchain.schema import HumanMessage, AIMessage
 from agents.agent_factory import AgentFactory
 
-# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Initialize the AgentFactory
+
 factory = AgentFactory(OPENAI_API_KEY=OPENAI_API_KEY)
 
-# Select the agent type
-agent_type = input("Enter agent type (conversation_agent or web_search_agent): ").strip()
+agent_type = input("Enter agent type (conversation_agent, web_search_agent, or graph_agent): ").strip()
+
 try:
     agent = factory.factory(agent_type)
 except ValueError as e:
@@ -28,14 +27,14 @@ while True:
         break
 
     # Add user's input to chat history
-    chat_history.append({"role": "human", "content": user_input})
+    human_message = HumanMessage(content=user_input)
+    chat_history.append(human_message)
 
     # Run the agent with the input and chat history
-    response = agent.run(user_input, chat_history)
+    response = agent.run(chat_history)
 
     # Save AI's response to chat history
-    ai_response = response["output"]
-    chat_history.append({"role": "ai", "content": ai_response})
+    chat_history.append(response)
 
     # Print the AI's response
-    print(f"AI: {ai_response}")
+    print(f"AI: {response.content}")
