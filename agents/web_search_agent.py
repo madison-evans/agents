@@ -1,17 +1,17 @@
 from langchain_openai import ChatOpenAI
 from langchain.agents import create_tool_calling_agent, AgentExecutor
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.tools.tavily_search import TavilySearchResults
+
+from agents.tools.tool_registry import ToolRegistry
 
 
 class WebSearchAgent:
     def __init__(self, OPENAI_API_KEY: str):
         self.llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
         
-        # Initialize tools
-        tavily_search_tool = TavilySearchResults(max_results=1)
-
-        self.tools = tavily_search_tool
+        # Initialize ToolRegistry and fetch required tools
+        tool_registry = ToolRegistry()
+        self.tools = tool_registry.get_tools(['tavily_search'], max_results=1)
         
         # Define a prompt for the agent
         prompt = ChatPromptTemplate.from_messages(

@@ -1,0 +1,8 @@
+python-dotenv==1.0.0               
+langchain==0.0.300                
+langchain-openai==0.1.5            
+langchain-core==0.1.4              
+langchain-community-tools==0.1.1  
+langchain-schema==0.0.3           
+langchain-memory==0.1.5           
+openai==0.28.0                    
