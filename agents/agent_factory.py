@@ -1,11 +1,7 @@
-# agents.py
-
-import logging
 from typing import Dict, Type
-# from agents.knowledgebase_routing_agent import KnowledgebaseRoutingAgent
 from agents.conversation_agent import ConversationAgent
+from agents.web_search_agent import WebSearchAgent  
 from agents.base_agent import Agent
-# from agents.tool_calling_agent import ToolCallingAgent  # Import the new agent
 
 
 class AgentFactory:
@@ -17,8 +13,7 @@ class AgentFactory:
         self.kwargs = kwargs
         self.agent_registry: Dict[str, Type[Agent]] = {
             'conversation_agent': ConversationAgent,
-            # 'tool_calling_agent': ToolCallingAgent,
-            # Add other agents here
+            'web_search_agent': WebSearchAgent,  # Register the new agent
         }
 
     def factory(self, agent_type: str) -> Agent:

@@ -8,7 +8,6 @@ from langchain_core.chat_history import BaseChatMessageHistory
 from .base_agent import Agent
 from .llm_runnable import LLMRunnable  
 
-
 class ConversationAgent(Agent):
     def __init__(self, OPENAI_API_KEY: str):
         self.llm = ChatOpenAI(
