@@ -17,7 +17,7 @@ class AgentFactory:
         self.kwargs = kwargs
         self.agent_registry: Dict[str, Type[Agent]] = {
             'conversation_agent': ConversationAgent,
-            'tool_calling_agent': ToolCallingAgent,
+            # 'tool_calling_agent': ToolCallingAgent,
             # Add other agents here
         }
 
