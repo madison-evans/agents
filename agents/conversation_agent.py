@@ -15,7 +15,6 @@ class ConversationAgent(Agent):
             model="gpt-3.5-turbo"
         )
 
-        # Initialize ConversationBufferMemory
         self.memory = ConversationBufferMemory()
 
         self.conversation = RunnableWithMessageHistory(

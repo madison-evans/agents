@@ -9,11 +9,9 @@ class WebSearchAgent:
     def __init__(self, OPENAI_API_KEY: str):
         self.llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-3.5-turbo-0125")
         
-        # Initialize ToolRegistry and fetch required tools
         tool_registry = ToolRegistry()
         self.tools = tool_registry.get_tools(['tavily_search'], max_results=1)
         
-        # Define a prompt for the agent
         prompt = ChatPromptTemplate.from_messages(
             [
                 (
@@ -27,7 +25,6 @@ class WebSearchAgent:
             ]
         )
         
-        # Create the tool-calling agent
         self.agent = create_tool_calling_agent(self.llm, self.tools, prompt)
         self.executor = AgentExecutor(agent=self.agent, tools=self.tools, verbose=True)
 
@@ -38,5 +35,5 @@ class WebSearchAgent:
         input_data = {"input": input_text}
         if chat_history:
             input_data["chat_history"] = chat_history
-
+        
         return self.executor.invoke(input_data)

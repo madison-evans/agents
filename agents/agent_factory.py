@@ -13,7 +13,8 @@ class AgentFactory:
         self.kwargs = kwargs
         self.agent_registry: Dict[str, Type[Agent]] = {
             'conversation_agent': ConversationAgent,
-            'web_search_agent': WebSearchAgent,  # Register the new agent
+            'web_search_agent': WebSearchAgent
+            # Add new agents here...
         }
 
     def factory(self, agent_type: str) -> Agent:
