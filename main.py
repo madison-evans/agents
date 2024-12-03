@@ -7,29 +7,24 @@ from agents.agent_factory import AgentFactory
 from agents.base_agent import Agent
 from langgraph.checkpoint.memory import MemorySaver
 
+load_dotenv()
+
 EXIT_COMMAND = 'exit'
-# Configure logging
+
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
-# Load environment variables
-load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
-# Initialize LLM
 llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
 
-# Initialize shared memory using LangGraph's MemorySaver for persistence
-shared_memory = MemorySaver()
+shared_memory = MemorySaver() # shared memory using LangGraph's MemorySaver for conversation persistence
 
-# Initialize AgentFactory with shared dependencies
 agent_factory = AgentFactory(llm=llm, memory=shared_memory)
 
-# Choose agent type (i/e 'web_search_agent') and get agent
-agent = agent_factory.factory('web_search_agent')
-
+agent = agent_factory.factory('web_search_agent') # Choose agent type (i/e 'web_search_agent') and get agent
 
 def chatbot_loop(agent: Agent):
     print("Welcome to the Chatbot! Type 'exit' to end the conversation.\n")

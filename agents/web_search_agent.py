@@ -1,5 +1,5 @@
 import logging
-from flask import json
+import json
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
 from agents.base_agent import Agent
@@ -43,25 +43,24 @@ class WebSearchAgent(Agent):
         self.agent = create_react_agent(
             self.llm,
             tools=self.tools,
-            checkpointer=self.memory,  # Add persistence
+            checkpointer=self.memory,
         )
 
-    def _log_tool_calls(self, event):
+    def _log_tool_calls(self, response: AIMessage):
         """
-        Log tool calls from the event.
+        Log tool calls from the agent's response.
 
-        :param event: The current event in the agent's response stream.
+        :param response: The AIMessage response from the agent.
         """
-        # Check if the event contains tool_calls
-        if "tool_calls" in event.get("messages", [])[-1].additional_kwargs:
-            tool_calls = event["messages"][-1].additional_kwargs["tool_calls"]
+        if "tool_calls" in response.additional_kwargs:
+            tool_calls = response.additional_kwargs["tool_calls"]
             for tool_call in tool_calls:
                 logger.info(f"Tool Call: {tool_call['function']['name']}\n%s",
                             json.dumps(tool_call, indent=4))
 
     def run(self, message: HumanMessage) -> AIMessage:
         """
-        Process a HumanMessage and return an AIMessage response.
+        Process a HumanMessage and return an AIMessage response using a single-step invoke.
 
         :param message: User's input message.
         :return: AIMessage response.
@@ -70,17 +69,15 @@ class WebSearchAgent(Agent):
             thread_id = "default"  # You can customize this for multi-user support
             config = {"configurable": {"thread_id": thread_id}}
 
-            # Stream responses from the agent
-            for event in self.agent.stream(
-                {"messages": [message]},
-                config,
-                stream_mode="values",
-            ):
-                # Delegate logging to the private method
-                self._log_tool_calls(event)
+            # Use invoke for a single-step interaction
+            response = self.agent.invoke({"messages": [message]}, config=config, debug=True)
+            ai_message = response["messages"][-1]  # Assuming the last message is the AI response
+            if isinstance(ai_message, AIMessage):
+                return ai_message
+            else:
+                logger.error("Unexpected message type in response.")
+                raise ValueError("Expected AIMessage in the response.")
 
-                response = event["messages"][-1]
-            return response
         except Exception as e:
             logger.error("Error generating response", exc_info=True)
             return AIMessage(content="Sorry, I encountered an error while processing your request.")
