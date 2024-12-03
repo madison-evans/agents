@@ -101,24 +101,12 @@ def generate_and_save_plot(agent: Agent, agent_type: str, output_dir: str = "age
     os.makedirs(output_dir, exist_ok=True)
     logger.debug(f"Ensured that visualization directory exists: {output_dir}")
 
-    # Access the compiled workflow from the agent
-    if hasattr(agent, 'app'):
-        compiled_workflow = agent.app
-        logger.debug(
-            "Retrieved compiled workflow from the agent's 'app' attribute.")
+    # Use the agent directly for visualization if it supports graph drawing
+    if hasattr(agent, 'agent') and hasattr(agent.agent, 'get_graph'):
+        graph = agent.agent.get_graph()
     else:
-        logger.error(
-            "The agent does not have an 'app' attribute containing the compiled workflow.")
-        raise AttributeError("Invalid agent workflow.")
-
-    # Retrieve the graph from the compiled workflow
-    try:
-        graph = compiled_workflow.get_graph()
-        logger.debug("Retrieved graph from the compiled workflow.")
-    except AttributeError:
-        logger.error(
-            "The compiled workflow does not have a 'get_graph' method.")
-        raise
+        logger.error("The agent does not have a valid graph representation.")
+        raise AttributeError("Agent does not support graph visualization.")
 
     # Generate Mermaid diagram
     try:
@@ -140,7 +128,6 @@ def generate_and_save_plot(agent: Agent, agent_type: str, output_dir: str = "age
 
     # Convert Mermaid diagram to PNG using Mermaid.Ink API
     try:
-        # Use the proper enumerated constant for the draw method
         mermaid_png = graph.draw_mermaid_png(draw_method=MermaidDrawMethod.API)
         image_path = os.path.join(output_dir, f"{agent_type}_plot.png")
         with open(image_path, 'wb') as img_file:

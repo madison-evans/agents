@@ -1,30 +1,15 @@
 import logging
-import json
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import MemorySaver
 from agents.base_agent import Agent
 from agents.tools.tool_registry import ToolRegistry
+from agents.utils import CustomFormatter
+
 
 # Initialize a logger specific to this module
 logger = logging.getLogger(__name__)
-
-# Avoid multiple handler additions
 if not logger.hasHandlers():
     # Custom formatter for color and indentation
-    class CustomFormatter(logging.Formatter):
-        GREEN = "\033[92m"
-        RESET = "\033[0m"
-
-        def format(self, record):
-            if "Tool Call" in record.msg:
-                record.msg = f"{self.GREEN}{record.msg}{self.RESET}"
-            if isinstance(record.args, dict):
-                # Pretty-print JSON arguments
-                record.msg += "\n" + json.dumps(record.args, indent=4)
-                record.args = ()  # Clear args to avoid default string formatting
-            return super().format(record)
-
     handler = logging.StreamHandler()
     formatter = CustomFormatter("%(asctime)s - %(levelname)s - %(message)s")
     handler.setFormatter(formatter)
