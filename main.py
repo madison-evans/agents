@@ -1,40 +1,50 @@
+import logging
 import os
 from dotenv import load_dotenv
-from langchain.schema import HumanMessage, AIMessage
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
 from agents.agent_factory import AgentFactory
+from agents.base_agent import Agent
+from langgraph.checkpoint.memory import MemorySaver
 
+EXIT_COMMAND = 'exit'
+# Configure logging
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
+# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
+
+# Initialize LLM
+llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
+
+# Initialize shared memory using LangGraph's MemorySaver for persistence
+shared_memory = MemorySaver()
+
+# Initialize AgentFactory with shared dependencies
+agent_factory = AgentFactory(llm=llm, memory=shared_memory)
+
+# Choose agent type (i/e 'web_search_agent') and get agent
+agent = agent_factory.factory('web_search_agent')
 
 
-factory = AgentFactory(OPENAI_API_KEY=OPENAI_API_KEY)
+def chatbot_loop(agent: Agent):
+    print("Welcome to the Chatbot! Type 'exit' to end the conversation.\n")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == EXIT_COMMAND:
+            print("Goodbye!")
+            break
 
-agent_type = input("Enter agent type (conversation_agent, web_search_agent, or graph_agent): ").strip()
+        try:
+            ai_message = agent.run(HumanMessage(content=user_input))
+            print(f"\n-----\n\nBot: {ai_message.content}\n")
+        except Exception as e:
+            logging.error("Error generating response", exc_info=True)
 
-try:
-    agent = factory.factory(agent_type)
-except ValueError as e:
-    print(e)
-    exit()
 
-# Start interacting with the agent
-print("Start interacting with the agent (type 'exit' to stop):")
-chat_history = []
-
-while True:
-    user_input = input("You: ")
-    if user_input.lower() == "exit":
-        break
-
-    # Add user's input to chat history
-    human_message = HumanMessage(content=user_input)
-    chat_history.append(human_message)
-
-    # Run the agent with the input and chat history
-    response = agent.run(chat_history)
-
-    # Save AI's response to chat history
-    chat_history.append(response)
-
-    # Print the AI's response
-    print(f"AI: {response.content}")
+if __name__ == "__main__":
+    chatbot_loop(agent)

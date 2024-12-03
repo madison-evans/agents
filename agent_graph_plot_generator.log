@@ -1,0 +1,15 @@
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:47:59 - __main__ - User selected agent: web_search_agent
+[INFO] 2024-12-03 09:47:59 - __main__ - Instantiated agent: web_search_agent
+[INFO] 2024-12-03 09:47:59 - __main__ - Generating graph plot for agent: web_search_agent
+[DEBUG] 2024-12-03 09:47:59 - __main__ - Ensured that visualization directory exists: agents/visualizations
+[ERROR] 2024-12-03 09:47:59 - __main__ - The agent does not have an 'app' attribute containing the compiled workflow.
+[ERROR] 2024-12-03 09:47:59 - __main__ - An error occurred while generating the graph plot: Invalid agent workflow.
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 205, in main
+    generate_and_save_plot(agent, selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 112, in generate_and_save_plot
+    raise AttributeError("Invalid agent workflow.")
+AttributeError: Invalid agent workflow.
