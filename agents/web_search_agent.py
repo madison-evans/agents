@@ -1,4 +1,5 @@
 import logging
+from flask import json
 from langchain_core.messages import HumanMessage, AIMessage
 from langgraph.prebuilt import create_react_agent
 from agents.base_agent import Agent
@@ -45,6 +46,19 @@ class WebSearchAgent(Agent):
             checkpointer=self.memory,  # Add persistence
         )
 
+    def _log_tool_calls(self, event):
+        """
+        Log tool calls from the event.
+
+        :param event: The current event in the agent's response stream.
+        """
+        # Check if the event contains tool_calls
+        if "tool_calls" in event.get("messages", [])[-1].additional_kwargs:
+            tool_calls = event["messages"][-1].additional_kwargs["tool_calls"]
+            for tool_call in tool_calls:
+                logger.info(f"Tool Call: {tool_call['function']['name']}\n%s",
+                            json.dumps(tool_call, indent=4))
+
     def run(self, message: HumanMessage) -> AIMessage:
         """
         Process a HumanMessage and return an AIMessage response.
@@ -62,14 +76,8 @@ class WebSearchAgent(Agent):
                 config,
                 stream_mode="values",
             ):
-                # Check if the event contains tool_calls
-                if "tool_calls" in event.get("messages", [])[-1].additional_kwargs:
-                    tool_calls = event["messages"][-1].additional_kwargs["tool_calls"]
-                    for tool_call in tool_calls:
-                        logger.info(
-                            f"Tool Call: {tool_call['function']['name']}\n")
-                        # logger.info("Function Call JSON:\n%s",
-                        #             json.dumps(tool_call, indent=4))
+                # Delegate logging to the private method
+                self._log_tool_calls(event)
 
                 response = event["messages"][-1]
             return response
