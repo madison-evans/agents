@@ -1,40 +1,67 @@
+import logging
 import os
 from dotenv import load_dotenv
-from langchain.schema import HumanMessage, AIMessage
-from agents.agent_factory import AgentFactory
+from langchain_openai import ChatOpenAI
+from langchain.schema import HumanMessage
 
+from agent_resources.agent_factory import AgentFactory
+from utils import get_available_agents, prompt_user_for_agent
+from langgraph.checkpoint.memory import MemorySaver
+
+# Configure logging
+logger = logging.getLogger(__name__)
+
+# Load environment variables
 load_dotenv()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is not set.")
 
 
-factory = AgentFactory(OPENAI_API_KEY=OPENAI_API_KEY)
 
-agent_type = input("Enter agent type (conversation_agent, web_search_agent, or graph_agent): ").strip()
+def main():
 
-try:
-    agent = factory.factory(agent_type)
-except ValueError as e:
-    print(e)
-    exit()
+    # Initialize LLM
+    llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, model="gpt-3.5-turbo")
 
-# Start interacting with the agent
-print("Start interacting with the agent (type 'exit' to stop):")
-chat_history = []
+    # Initialize shared memory using LangGraph's MemorySaver for persistence
+    shared_memory = MemorySaver()
 
-while True:
-    user_input = input("You: ")
-    if user_input.lower() == "exit":
-        break
+    # Initialize AgentFactory with shared dependencies
+    agent_factory = AgentFactory(llm=llm, memory=shared_memory)
 
-    # Add user's input to chat history
-    human_message = HumanMessage(content=user_input)
-    chat_history.append(human_message)
+    # Retrieve available agents
+    available_agents = get_available_agents(agent_factory)
+    if not available_agents:
+        logger.error("No agents available in the AgentFactory.")
+        print("No agents available to visualize.")
+        return
+    
+    # Prompt user to select an agent
+    selected_agent_type = prompt_user_for_agent(available_agents)
+    
+    try: 
+        agent = agent_factory.factory(selected_agent_type)
+        logger.info(f"Instantiated agent: {selected_agent_type}")
+    except Exception as e:
+        logger.error(
+            f"Failed to instantiate agent '{selected_agent_type}': {e}", exc_info=True)
+        print(
+            f"Error: Could not instantiate agent '{selected_agent_type}'. Check logs for details.")
+        return
+    
+    print(f"\n\n-----\n\nWelcome to the Chatbot! \nYou've selected the {selected_agent_type} agent. Type 'exit' to end the conversation.\n")
+    while True:
+        user_input = input("You: ")
+        if user_input.lower() == 'exit':
+            print("Goodbye!")
+            break
+        try:
+            ai_message = agent.run(HumanMessage(content=user_input))
+            print(f"\n-----\n\nBot: {ai_message.content}\n")
+        except Exception as e:
+            logging.error("Error generating response", exc_info=True)
 
-    # Run the agent with the input and chat history
-    response = agent.run(chat_history)
 
-    # Save AI's response to chat history
-    chat_history.append(response)
-
-    # Print the AI's response
-    print(f"AI: {response.content}")
+if __name__ == "__main__":
+    main()

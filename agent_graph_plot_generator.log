@@ -1,0 +1,92 @@
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:47:56 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:47:59 - __main__ - User selected agent: web_search_agent
+[INFO] 2024-12-03 09:47:59 - __main__ - Instantiated agent: web_search_agent
+[INFO] 2024-12-03 09:47:59 - __main__ - Generating graph plot for agent: web_search_agent
+[DEBUG] 2024-12-03 09:47:59 - __main__ - Ensured that visualization directory exists: agents/visualizations
+[ERROR] 2024-12-03 09:47:59 - __main__ - The agent does not have an 'app' attribute containing the compiled workflow.
+[ERROR] 2024-12-03 09:47:59 - __main__ - An error occurred while generating the graph plot: Invalid agent workflow.
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 205, in main
+    generate_and_save_plot(agent, selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 112, in generate_and_save_plot
+    raise AttributeError("Invalid agent workflow.")
+AttributeError: Invalid agent workflow.
+[INFO] 2024-12-03 09:51:52 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:51:53 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:51:53 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:51:54 - __main__ - User selected agent: web_search_agent
+[INFO] 2024-12-03 09:51:54 - __main__ - Instantiated agent: web_search_agent
+[INFO] 2024-12-03 09:51:54 - __main__ - Generating graph plot for agent: web_search_agent
+[DEBUG] 2024-12-03 09:51:54 - __main__ - Ensured that visualization directory exists: agents/visualizations
+[ERROR] 2024-12-03 09:51:54 - __main__ - The agent does not have an 'app' attribute containing the compiled workflow.
+[ERROR] 2024-12-03 09:51:54 - __main__ - An error occurred while generating the graph plot: Invalid agent workflow.
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 205, in main
+    generate_and_save_plot(agent, selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 112, in generate_and_save_plot
+    raise AttributeError("Invalid agent workflow.")
+AttributeError: Invalid agent workflow.
+[INFO] 2024-12-03 09:56:00 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:56:00 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:56:00 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:56:02 - __main__ - User selected agent: web_search_agent
+[ERROR] 2024-12-03 09:56:02 - __main__ - Failed to instantiate agent 'web_search_agent': cannot import name 'MessagesState' from 'langgraph.graph.state' (/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/state.py)
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 194, in main
+    agent = agent_factory.factory(selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/agent_factory.py", line 43, in factory
+    return agent_class(llm=self.llm, memory=self.memory)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/web_search_agent.py", line 64, in __init__
+    from langgraph.graph.state import MessagesState
+ImportError: cannot import name 'MessagesState' from 'langgraph.graph.state' (/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/state.py)
+[INFO] 2024-12-03 09:56:47 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:56:48 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:56:48 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:57:03 - __main__ - User selected agent: web_search_agent
+[ERROR] 2024-12-03 09:57:03 - __main__ - Failed to instantiate agent 'web_search_agent': Found edge starting at unknown node 'START'
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 194, in main
+    agent = agent_factory.factory(selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/agent_factory.py", line 43, in factory
+    return agent_class(llm=self.llm, memory=self.memory)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/web_search_agent.py", line 74, in __init__
+    self.app = workflow.compile(checkpointer=self.memory)
+  File "/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/state.py", line 519, in compile
+    self.validate(
+  File "/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/graph.py", line 375, in validate
+    raise ValueError(f"Found edge starting at unknown node '{source}'")
+ValueError: Found edge starting at unknown node 'START'
+[INFO] 2024-12-03 09:58:52 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 09:58:52 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 09:58:52 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 09:58:55 - __main__ - User selected agent: web_search_agent
+[ERROR] 2024-12-03 09:58:55 - __main__ - Failed to instantiate agent 'web_search_agent': 
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 194, in main
+    agent = agent_factory.factory(selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/agent_factory.py", line 43, in factory
+    return agent_class(llm=self.llm, memory=self.memory)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/web_search_agent.py", line 68, in __init__
+    workflow.add_node(START)
+  File "/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/state.py", line 359, in add_node
+    raise RuntimeError
+RuntimeError
+[INFO] 2024-12-03 10:01:45 - __main__ - Initialized ChatOpenAI LLM.
+[INFO] 2024-12-03 10:01:46 - __main__ - Initialized shared conversation memory.
+[INFO] 2024-12-03 10:01:46 - __main__ - Initialized AgentFactory with shared dependencies.
+[INFO] 2024-12-03 10:01:49 - __main__ - User selected agent: web_search_agent
+[ERROR] 2024-12-03 10:01:49 - __main__ - Failed to instantiate agent 'web_search_agent': Found edge starting at unknown node 'START'
+Traceback (most recent call last):
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/generate_agent_plot.py", line 181, in main
+    agent = agent_factory.factory(selected_agent_type)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/agent_factory.py", line 43, in factory
+    return agent_class(llm=self.llm, memory=self.memory)
+  File "/mnt/c/Users/evansmad/OneDrive - Intel Corporation/Documents/Projects/agents/agents/web_search_agent.py", line 74, in __init__
+    self.app = workflow.compile(checkpointer=self.memory)
+  File "/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/state.py", line 519, in compile
+    self.validate(
+  File "/home/evansmad/.local/lib/python3.10/site-packages/langgraph/graph/graph.py", line 375, in validate
+    raise ValueError(f"Found edge starting at unknown node '{source}'")
+ValueError: Found edge starting at unknown node 'START'
