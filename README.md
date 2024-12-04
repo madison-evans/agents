@@ -678,7 +678,7 @@ class ToolRegistry:
         return [cls.get_tool(name, **kwargs) for name in tool_names]
 ```
 
-#### **8.1.3. Usage**
+#### **Usage**
 
 - **Registering a Tool**:
 
