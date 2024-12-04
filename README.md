@@ -9,22 +9,23 @@ This repo is built for testing new agentic features. It is built from langchain 
 ```
 agent_resources/
     base_agent.py
-agents/
-    classification_agent/
-        classification_agent.py
-        nodes.py
-        classification_agent_workflow.png
-    task_planner_agent/
-        task_planner_agent.py
-        nodes.py
-        task_planner_agent_workflow.png
-    web_search_agent/
-        web_search_agent.py
-        nodes.py
-        web_search_agent_workflow.png
-tools/
-    tool_registry.py
-    rag_tool.py
+    agent_factory.py
+    agents/
+        classification_agent/
+            classification_agent.py
+            nodes.py
+            classification_agent_workflow.png
+        task_planner_agent/
+            task_planner_agent.py
+            nodes.py
+            task_planner_agent_workflow.png
+        web_search_agent/
+            web_search_agent.py
+            nodes.py
+            web_search_agent_workflow.png
+    tools/
+        tool_registry.py
+        rag_tool.py
 ```
 
 ---
@@ -58,7 +59,7 @@ tools/
 
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   source venv/bin/activate
    ```
 
 3. **Install Dependencies**
@@ -82,9 +83,16 @@ tools/
    ```dotenv
    OPENAI_API_KEY=YOUR_OPENAI_API_KEY_HERE
    TAVILY_API_KEY=YOUR_TAVILY_API_KEY_HERE
+
+   # OPTIONAL LANGSMITH FOR TRACING
+   # LANGCHAIN_TRACING_V2=true
+   # LANGCHAIN_ENDPOINT="https://api.smith.langchain.com"
+   # LANGCHAIN_API_KEY="YOUR_API_KEY_HERE"
+   # LANGCHAIN_PROJECT="PROJECT_NAME_HERE"
    ```
 
    - If you don't have a `TAVILY_API_KEY`, and don't plan to use the web search agent, you can leave it blank or remove it.
+   - For langsmith, enter corresponding key and project name to enable traceability 
 
 ---
 
@@ -92,7 +100,7 @@ tools/
 
 ### Running the Application
 
-Run the `main.py` script to start interacting with the agents:
+Run the `main.py` script to start interacting with the agents (mainly for testing purposes):
 
 ```bash
 python main.py
@@ -103,11 +111,12 @@ python main.py
 Upon running the script, you'll be prompted to select an agent type:
 
 ```plaintext
-Enter agent type (conversation_agent or web_search_agent):
+Available Agent Types:
+1. web_search_agent
+2. classification_agent
+3. task_planner_agent
+Enter the number corresponding to the agent you want to visualize: 
 ```
-
-- **conversation_agent**: An agent that engages in general conversation with memory support.
-- **web_search_agent**: An agent that can perform web searches for up-to-date information.
 
 Type the desired agent name and press Enter.
 
@@ -116,9 +125,10 @@ Type the desired agent name and press Enter.
 After selecting an agent, you can start the conversation:
 
 ```plaintext
-Start interacting with the agent (type 'exit' to stop):
-You: Hello!
-AI: Hello! How can I assist you today?
+Welcome to the Chatbot! 
+You've selected the web_search_agent agent. Type 'exit' to end the conversation.
+
+You: 
 ```
 
 - **Exit the Conversation**: Type `exit` and press Enter to terminate the session.
@@ -129,13 +139,13 @@ AI: Hello! How can I assist you today?
 ### **Overview of Directories**
 
 - **`agent_resources/`**: Contains shared resources for agents, including the abstract base agent class (`base_agent.py`). This serves as the foundation for all agent implementations.
-- **`agents/`**: Houses individual agent implementations. Each agent is contained within its own folder, which includes:
-    - **`<agent_name>.py`**: The main agent class file.
-    - **`nodes.py`**: Definitions of node functions specific to the agent.
-    - **`<agent_name>_workflow.png`**: A visual representation (DAG) of the agent's workflow.
-- **`tools/`**: Contains tool implementations and a registry for managing and retrieving tools. This includes:
-    - **`tool_registry.py`**: A registry/factory class for registering and retrieving tools.
-    - **`rag_tool.py`**: An example of a custom tool that can be integrated into agents.
+    - **`agents/`**: Houses individual agent implementations. Each agent is contained within its own folder, which includes:
+        - **`<agent_name>.py`**: The main agent class file.
+        - **`nodes.py`**: Definitions of node functions specific to the agent.
+        - **`<agent_name>_workflow.png`**: A visual representation (DAG) of the agent's workflow.
+    - **`tools/`**: Contains tool implementations and a registry for managing and retrieving tools. This includes:
+        - **`tool_registry.py`**: A registry/factory class for registering and retrieving tools.
+        - **`rag_tool.py`**: An example of a custom tool that can be integrated into agents.
 
 ---
 
@@ -143,7 +153,7 @@ AI: Hello! How can I assist you today?
 
 ### **LangGraph Overview**
 
-**LangGraph** is a powerful library that enables the creation of complex workflows using graphs. It offers advanced state management and dynamic graph capabilities, making it ideal for building sophisticated agent workflows.
+**LangGraph** is a library that enables the creation of complex workflows using graphs. It offers advanced state management and dynamic graph capabilities, making it ideal for building sophisticated agent workflows.
 
 #### **StateGraph**
 
@@ -153,7 +163,7 @@ AI: Hello! How can I assist you today?
 
 #### **Nodes**
 
-- Nodes are functions that manipulate the state.
+- **Nodes** are functions that manipulate the state.
 - Each node represents a unit of work within the graph.
 - Nodes accept a `state` and return updated state information.
 - They are the building blocks of the workflow.
@@ -173,7 +183,6 @@ AI: Hello! How can I assist you today?
 
 ### **Agent Architecture**
 
-Agents are central to the project, encapsulating the logic for processing inputs and producing outputs using LLMs.
 #### **Base Agent Class**
 
 - Located in `agent_resources/base_agent.py`.
@@ -434,7 +443,7 @@ agent.visualize_workflow(save_path="my_agent_workflow.png")
 
 The repo currently has a few example agents to reference. To illustrate the concepts discussed, let's explore the `ClassificationAgent` in detail. This agent processes input text by classifying it, extracting entities, and summarizing the content. These nodes are run concurrently 
 
-![alt text](agents/classification_agent/classification_agent_workflow.png)
+![alt text](agent_resources/agents/classification_agent/classification_agent_workflow.png)
 
 ### **Agent Overview**
 
