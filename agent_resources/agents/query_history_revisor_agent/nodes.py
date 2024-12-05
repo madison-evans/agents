@@ -28,15 +28,12 @@ def general_response(state: State) -> State:
     prompt = PromptTemplate(
         input_variables=["conversation_history", "new_user_message"],
         template=(
-            "You are a helpful and friendly assistant. Here's the conversation so far:\n"
-            "{conversation_history}\n\n"
-            "Now the user says:\n{new_user_message}\n\n"
+            "You are a helpful and friendly assistant.\n"
+            "Conversation history: {conversation_history}\n\n"
+            "User: {new_user_message}\n\n"
             "Assistant response:"
         ),
     )
-
-    print("current state:")
-    print(state["messages"])
 
     # Format the prompt using the conversation history and the latest user message
     user_message = state["messages"][-1].content
