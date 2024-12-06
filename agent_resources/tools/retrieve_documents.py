@@ -34,7 +34,7 @@ class RetrieveDocuments(BaseTool):
             Document(
                 page_content=(
                     "Acids release hydrogen ions (H+) in solution, while bases release "
-                    "hydroxide ions (OH−). The pH scale measures acidity or alkalinity."
+                    "hydroxide ions (OH-). The pH scale measures acidity or alkalinity."
                 ),
                 metadata={"source": "https://chemistryfacts.com/acids-and-bases"},
             ),
