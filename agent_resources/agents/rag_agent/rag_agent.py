@@ -1,13 +1,12 @@
 import logging
 from langgraph.graph import StateGraph, END, START
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
-from .nodes import State, general_response
+from langchain_core.messages import BaseMessage, AIMessage
+from .nodes import State, general_response, check_query_type, rewrite_query, generate_answer_from_retrieval
 from agent_resources.base_agent import Agent
-from langgraph.checkpoint.memory import MemorySaver
 
 logger = logging.getLogger(__name__)
 
-class QueryHistoryRevisorAgent(Agent): 
+class RAGAgent(Agent): 
 
     def __init__(self, llm, memory): 
         self.llm = llm 
@@ -15,26 +14,40 @@ class QueryHistoryRevisorAgent(Agent):
         self.agent = self.compile_graph()
         self.chat_histories = {}  # A dictionary to track chat histories by session ID
 
-    def compile_graph(self): 
+    def compile_graph(self):
+        """
+        Compile the graph for the RAG pipeline with all necessary nodes and edges.
+        """
         # Create the state graph
         workflow = StateGraph(State)
 
         # Add nodes to the graph
-        workflow.add_node("start_node", lambda state: state)
         workflow.add_node("general_response", general_response)
-        
-        # Set entry point
-        workflow.add_edge(START, "start_node")
-        workflow.add_edge("start_node", "general_response")
+        workflow.add_node("rewrite_query", rewrite_query)
+        workflow.add_node("generate_answer_from_retrieval", generate_answer_from_retrieval)
+
+        # Set conditional entry point to decide between RAG or general response
+        workflow.add_conditional_edges(
+            START,
+            check_query_type,
+            path_map={
+                "general_response": "general_response",
+                "rewrite_query": "rewrite_query",
+            },
+        )
+
+        # Define RAG pipeline flow: rewrite query → generate answer
+        workflow.add_edge("rewrite_query", "generate_answer_from_retrieval")
+
+        # End the graph
         workflow.add_edge("general_response", END)
+        workflow.add_edge("generate_answer_from_retrieval", END)
 
         # Compile the graph with MemorySaver as the checkpointer
-        # This allows LangGraph to handle loading/saving conversation
-        # automatically every time we invoke the graph with the same thread_id.
         agent = workflow.compile(checkpointer=self.memory)
 
-        return agent 
-    
+        return agent
+
     def run(self, message: BaseMessage):
         """
         Process a message, update history automatically via MemorySaver, 
