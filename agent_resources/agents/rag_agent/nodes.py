@@ -125,16 +125,12 @@ def generate_answer_from_retrieval(state: State, retrieve_documents_tool: BaseTo
         ),
     )
 
-    # Format the prompt using the revised query and document context
     formatted_prompt = prompt.format(
         revised_query=revised_query,
         document_context=document_context
     )
 
-    # Generate the final answer using the LLM
     ai_response = llm.invoke([HumanMessage(content=formatted_prompt)])
-
-    # Append the final answer as an AI message to the conversation history
     state["messages"].append(AIMessage(content=ai_response.content))
 
     return state

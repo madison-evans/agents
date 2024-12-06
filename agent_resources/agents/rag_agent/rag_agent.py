@@ -60,12 +60,9 @@ class RAGAgent(Agent):
         and print the conversation history in the nodes.
         """
         try:
-            # Use a fixed thread_id or dynamically assign one if you handle multiple sessions
             thread_id = "default"  
             config = {"configurable": {"thread_id": thread_id}}
 
-            # Invoke the graph with the new incoming message.
-            # MemorySaver will automatically load previous state for this thread_id.
             response = self.agent.invoke({"messages": [message]}, config=config)
 
             ai_message = response["messages"][-1]
