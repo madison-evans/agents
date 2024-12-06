@@ -1,7 +1,7 @@
 from typing import Dict, Type, List
 from langchain.tools import BaseTool
 from langchain_community.tools.tavily_search import TavilySearchResults
-# from agents.tools.rag_tool import RAGTool
+from .retrieve_documents import RetrieveDocuments  
 
 
 class ToolRegistry:
@@ -9,9 +9,9 @@ class ToolRegistry:
     ToolRegistry manages the registration and retrieval of tools.
     """
 
-    tool_registry: Dict[str, Type[BaseTool]] = {
-        'tavily_search': TavilySearchResults,
-        # 'rag_tool': RAGTool,
+    tool_registry: Dict[str, BaseTool] = {
+        'tavily_search': TavilySearchResults(),
+        'retrieve_documents': RetrieveDocuments(),  
     }
 
     @classmethod
@@ -19,10 +19,11 @@ class ToolRegistry:
         """
         Retrieve a single tool by name.
         """
-        tool_class = cls.tool_registry.get(tool_name)
-        if tool_class is None:
+        tool = cls.tool_registry.get(tool_name)
+        if tool is None:
             raise ValueError(f"Unknown tool: {tool_name}")
-        return tool_class(**kwargs)
+        # If additional kwargs are provided, they are used to reinitialize the tool
+        return tool if not kwargs else tool.__class__(**kwargs)
 
     @classmethod
     def get_tools(cls, tool_names: List[str], **kwargs) -> List[BaseTool]:

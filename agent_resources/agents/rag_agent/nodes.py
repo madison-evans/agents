@@ -2,7 +2,7 @@ from typing import Annotated, List, TypedDict
 from langchain.prompts import PromptTemplate
 from langchain_openai import ChatOpenAI
 from langchain.schema import HumanMessage, AIMessage
-from langchain_core.documents import Document
+from langchain.tools import BaseTool
 from langgraph.graph.message import add_messages
 from dotenv import load_dotenv
 load_dotenv()
@@ -94,73 +94,16 @@ def rewrite_query(state: State) -> State:
 
     return state
 
-def retrieve_documents(revised_query: str) -> List[Document]:
-    """
-    Retrieves mock documents related to chemistry, based on the revised query.
-    """
-    print(f"Performing retrieval based on this query:\n\n{revised_query}\n\n")
 
-    # Mock documents related to chemistry
-    return [
-        Document(
-            page_content=(
-                "Water is often referred to as the universal solvent due to its ability to dissolve more substances "
-                "than any other liquid. This is because water molecules are polar, with a partial negative charge on the "
-                "oxygen atom and partial positive charges on the hydrogen atoms. This polarity allows water to interact "
-                "with and stabilize ions and polar molecules, making it crucial for chemical reactions in biological and "
-                "industrial systems."
-            ),
-            metadata={"source": "https://chemistryfacts.com/water-solvent"}
-        ),
-        Document(
-            page_content=(
-                "The periodic table of elements is one of the most significant achievements in science, organizing "
-                "all known chemical elements by their atomic number, electron configuration, and recurring chemical properties. "
-                "It allows scientists to predict the behavior of elements and their compounds, serving as a framework for "
-                "understanding chemical reactivity and trends, such as electronegativity and ionization energy."
-            ),
-            metadata={"source": "https://chemistryfacts.com/periodic-table"}
-        ),
-        Document(
-            page_content=(
-                "Acids and bases play a vital role in chemistry and everyday life. Acids, like hydrochloric acid (HCl), "
-                "release hydrogen ions (H+) in solution, while bases, such as sodium hydroxide (NaOH), release hydroxide ions (OH-). "
-                "The pH scale, ranging from 0 to 14, measures the acidity or alkalinity of a solution, with 7 being neutral. "
-                "These reactions are critical in processes like digestion, industrial manufacturing, and environmental regulation."
-            ),
-            metadata={"source": "https://chemistryfacts.com/acids-and-bases"}
-        ),
-        Document(
-            page_content=(
-                "Catalysts are substances that increase the rate of a chemical reaction without being consumed in the process. "
-                "They work by lowering the activation energy required for the reaction to proceed, allowing it to occur more "
-                "rapidly. Catalysts are used in a wide range of applications, from the synthesis of ammonia in the Haber process "
-                "to catalytic converters in vehicles that reduce harmful emissions."
-            ),
-            metadata={"source": "https://chemistryfacts.com/catalysts"}
-        ),
-        Document(
-            page_content=(
-                "Carbon is a versatile element that forms the backbone of organic chemistry. With its ability to form four covalent bonds, "
-                "carbon can create complex structures such as chains, rings, and frameworks found in biomolecules like DNA and proteins. "
-                "It also appears in inorganic compounds like carbon dioxide (CO2), playing a key role in processes such as photosynthesis "
-                "and the carbon cycle."
-            ),
-            metadata={"source": "https://chemistryfacts.com/carbon"}
-        )
-    ]
-
-
-
-def generate_answer_from_retrieval(state: State) -> State:
+def generate_answer_from_retrieval(state: State, retrieve_documents_tool: BaseTool) -> State:
     """
     Generates a final answer using the LLM based on retrieved documents and the revised query.
     """
     # Extract the revised query
     revised_query = state["revised_query"]
 
-    # Retrieve documents using the helper function
-    retrieved_documents = retrieve_documents(revised_query)
+    # Retrieve documents using the tool
+    retrieved_documents = retrieve_documents_tool.run(revised_query)
 
     # Combine the content of retrieved documents into a single string
     document_context = "\n".join(

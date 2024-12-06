@@ -3,17 +3,20 @@ from langgraph.graph import StateGraph, END, START
 from langchain_core.messages import BaseMessage, AIMessage
 from .nodes import State, general_response, check_query_type, rewrite_query, generate_answer_from_retrieval
 from agent_resources.base_agent import Agent
+from agent_resources.tools.tool_registry import ToolRegistry
 
 logger = logging.getLogger(__name__)
 
 class RAGAgent(Agent): 
 
     def __init__(self, llm, memory): 
+        self.tools = {
+            "retrieve_documents": ToolRegistry.get_tool('retrieve_documents'),
+        }
         self.llm = llm 
         self.memory = memory
         self.agent = self.compile_graph()
-        self.chat_histories = {}  # A dictionary to track chat histories by session ID
-
+        
     def compile_graph(self):
         """
         Compile the graph for the RAG pipeline with all necessary nodes and edges.
@@ -24,7 +27,10 @@ class RAGAgent(Agent):
         # Add nodes to the graph
         workflow.add_node("general_response", general_response)
         workflow.add_node("rewrite_query", rewrite_query)
-        workflow.add_node("generate_answer_from_retrieval", generate_answer_from_retrieval)
+        workflow.add_node(
+            "generate_answer_from_retrieval", 
+            lambda state: generate_answer_from_retrieval(state, self.tools["retrieve_documents"])
+        )
 
         # Set conditional entry point to decide between RAG or general response
         workflow.add_conditional_edges(
